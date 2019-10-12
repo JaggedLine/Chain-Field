@@ -1,4 +1,4 @@
-let xxx;
+let FedroSliver;
 
 // true if intersects
 function segments_intersect(x1, y1, x2, y2, x3, y3, x4, y4) 
