@@ -212,7 +212,7 @@ class ChainField
         table.update_score();
         table.update_colors();
         if (N > 1) { 
-            Table.destroySegmentAnimation(table, N - 1);
+            ChainField.destroySegmentAnimation(table, N - 1);
         }
     }
 
@@ -235,7 +235,7 @@ class ChainField
                         table.update_score();
                         table.update_colors();
                         if (N > 1) {
-                            Table.destroySegmentLinearAnimation(
+                            ChainField.destroySegmentLinearAnimation(
                                 table, N - 1, _past + 1);
                         } else {
                             table.busy = false;
@@ -279,7 +279,7 @@ class ChainField
                         table.update_score();
                         table.update_colors();
                         if (N > 1) {
-                            Table.destroySegmentLeshaAnimation(table, N - 1, _past + 1);
+                            ChainField.destroySegmentLeshaAnimation(table, N - 1, _past + 1);
                         } else {
                             table.busy = false;
                         }
@@ -604,27 +604,27 @@ class ChainField
 
     static cfKnightGame(x, y, table)
     {
-        if (table.destroy_segments(x, y, Table.drawSegmnetLinearAnimation)) {
+        if (table.destroy_segments(x, y, ChainField.drawSegmnetLinearAnimation)) {
             return;
         }
         for (let n = 1; n <= table.lines_cnt; n++) {
             if (segments_intersect(x, y, ...table.last_point,
                 table.points[n - 1][0], table.points[n - 1][1],
                 table.points[n][0], table.points[n][1])) {
-                Table.pulseNodeAnimation([256, 0, 0], 300, 10)(table.node(i, j));
+                ChainField.pulseNodeAnimation([256, 0, 0], 300, 10)(table.node(i, j));
                 return;
             }
         }
         if ((x - table.last_point[0]) ** 2 + (y - table.last_point[1]) == 5) {
-            Table.pulseNodeAnimation([256, 0, 0], 300, 10)(table.node(i, j));
+            ChainField.pulseNodeAnimation([256, 0, 0], 300, 10)(table.node(i, j));
             return;
         }
-        table.add_segment(x, y, Table.drawSegmnetLinearAnimation);
+        table.add_segment(x, y, ChainField.drawSegmnetLinearAnimation);
     }
 
     generate_table(x, y, 
         start_point = [0, 0], end_point = [x - 1, y - 1],
-        cf = Table.cfKnightGame)
+        cf = ChainField.cfKnightGame)
     {
         this.clear_table();
 
