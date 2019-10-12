@@ -69,7 +69,7 @@ class ChainField
         this.games_cnt = 0;
 
         setP('id', 'main');
-        setP('onwin', function(table) {table.clear_table()});
+        setP('onwin', function(table) {});
         setP('onchange', function(table) {});
 
         setP('segment_height', 15);
@@ -211,6 +211,7 @@ class ChainField
         segments.removeChild(table.segment(table.lines_cnt - 1));
         table.update_score();
         table.update_colors();
+        table.onchange();
         if (N > 1) { 
             ChainField.destroySegmentAnimation(table, N - 1);
         }
@@ -234,6 +235,7 @@ class ChainField
                         segments.removeChild(table.segment(table.lines_cnt));
                         table.update_score();
                         table.update_colors();
+                        table.onchange();
                         if (N > 1) {
                             ChainField.destroySegmentLinearAnimation(
                                 table, N - 1, _past + 1);
@@ -278,6 +280,7 @@ class ChainField
                         segments.removeChild(table.segment(table.lines_cnt));
                         table.update_score();
                         table.update_colors();
+                        table.onchange();
                         if (N > 1) {
                             ChainField.destroySegmentLeshaAnimation(table, N - 1, _past + 1);
                         } else {
@@ -353,7 +356,8 @@ class ChainField
     }
 
     get win() {
-        if (this.end_point[0] == this.last_point[0] && 
+        if (this.end_point && 
+            this.end_point[0] == this.last_point[0] && 
             this.end_point[1] == this.last_point[1]) 
         {
             return true;
@@ -373,8 +377,8 @@ class ChainField
 
     get last_point() {
         return [
-            this.points[this.lines_cnt()][0],
-            this.points[this.lines_cnt()][1]
+            this.points[this.lines_cnt][0],
+            this.points[this.lines_cnt][1]
         ]
     }
 
@@ -550,7 +554,7 @@ class ChainField
         return -1;
     }
 
-    clear_segments()
+    clear_segments(no_update = false)
     {
         let for_delete = [];
         for (let child of segments.children) {
@@ -561,9 +565,11 @@ class ChainField
         for (let child of for_delete) {
             segments.removeChild(child);
         }
-        this.points = [this.start_point];
-        this.update_score();
-        this.update_colors();
+        if (!no_update) {
+            this.points = [this.start_point];
+            this.update_score();
+            this.update_colors();
+        }
     }
 
     clear_nodes()
@@ -597,26 +603,36 @@ class ChainField
     {
         this.clear_segments();
         this.points = [this.start_point];
-        this.onchange();
         this.update_score();
+        this.onchange();
         this.update_colors();
+    }
+
+    delete_table()
+    {
+        this.clear_segments(true);
+        this.clear_nodes();
+        this.clear_grid();
+        this.points = [this.start_point];
+        this.update_score();
+        this.onchange();
     }
 
     static cfKnightGame(x, y, table)
     {
-        if (table.destroy_segments(x, y, ChainField.drawSegmnetLinearAnimation)) {
+        if (table.destroy_segments(x, y, ChainField.destroySegmentLinearAnimation)) {
             return;
         }
         for (let n = 1; n <= table.lines_cnt; n++) {
             if (segments_intersect(x, y, ...table.last_point,
                 table.points[n - 1][0], table.points[n - 1][1],
                 table.points[n][0], table.points[n][1])) {
-                ChainField.pulseNodeAnimation([256, 0, 0], 300, 10)(table.node(i, j));
+                ChainField.pulseNodeAnimation([256, 0, 0], 300, 10)(table.node(y, x));
                 return;
             }
         }
-        if ((x - table.last_point[0]) ** 2 + (y - table.last_point[1]) == 5) {
-            ChainField.pulseNodeAnimation([256, 0, 0], 300, 10)(table.node(i, j));
+        if ((x - table.last_point[0]) ** 2 + (y - table.last_point[1]) ** 2 != 5) {
+            ChainField.pulseNodeAnimation([256, 0, 0], 300, 10)(table.node(y, x));
             return;
         }
         table.add_segment(x, y, ChainField.drawSegmnetLinearAnimation);
@@ -626,17 +642,16 @@ class ChainField
         start_point = [0, 0], end_point = [x - 1, y - 1],
         cf = ChainField.cfKnightGame)
     {
-        this.clear_table();
-
+        this.points = [this.start_point];
         this.start_point = [Math.min(start_point[0], x - 1), 
             Math.min(start_point[1], y - 1)];
         this.end_point = [Math.min(end_point[0], x - 1), 
             Math.min(end_point[1], y - 1)];
-        this.points = [this.start_point];
         this.sizeX = x*1; this.sizeY = y*1;
-
         this.busy = false;
 
+        this.delete_table();
+        
         if (this.show_grid) {
             for (let i = 0; i < y; ++i) {
                 addElement(grid, 'div', 
@@ -724,13 +739,12 @@ class ChainField
                 let table = this;
                 this.clicknode(i, j).onclick = function () {
                     if (!table.busy) {
-                        f_click(j, i, table);
+                        cf(j, i, table);
                     }
                 };
             }
         }
 
-        this.onchange();
         this.update_score();
         this.update_colors();
         this.node(this.start_point[1], this.start_point[0]).style.background = 
@@ -738,39 +752,36 @@ class ChainField
         this.node(this.end_point[1], this.end_point[0]).style.background = 
             this.end_node_color;
         this.update_background();
+        this.onchange();
     }
 
     add_segment(x, y, animation = this.drawSegmentAnimation) {
-        if (!this.win) {
-            let last_x = this.points[this.lines_cnt][0];
-            let last_y = this.points[this.lines_cnt][1];
-            animation(this, 
-                last_x * this.gridStep, last_y * this.gridStep, 
-                x * this.gridStep, y * this.gridStep);
-            this.points.push([x, y]);
-            this.onchange();
-            this.update_colors();
-            this.update_score();
-            if (this.end_point[0] == x && this.end_point[1] == y) {
-                this.onwin(this);
-            }
+        let last_x = this.points[this.lines_cnt][0];
+        let last_y = this.points[this.lines_cnt][1];
+        animation(this, 
+            last_x * this.gridStep, last_y * this.gridStep, 
+            x * this.gridStep, y * this.gridStep);
+        this.points.push([x, y]);
+        this.onchange();
+        this.update_colors();
+        this.update_score();
+        if (this.end_point[0] == x && this.end_point[1] == y) {
+            this.onwin(this);
         }
 
     }
 
     destroy_segments(x, y, animation = this.destroySegmentAnimation)
     {
-        if (!this.win) {
-            for (let n = 0; n < this.lines_cnt; ++n) {
-                if (x == this.points[n][0] && y == this.points[n][1]) {
-                    animation(this, this.lines_cnt - n);
-                    return true;
-                }
+        for (let n = 0; n < this.lines_cnt; ++n) {
+            if (x == this.points[n][0] && y == this.points[n][1]) {
+                animation(this, this.lines_cnt - n);
+                return true;
             }
-            this.onchange()
-            this.update_score();
-            this.update_colors();
-            return false;
         }
+        this.onchange()
+        this.update_score();
+        this.update_colors();
+        return false;
     }
 }
