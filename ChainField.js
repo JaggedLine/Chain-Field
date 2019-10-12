@@ -50,7 +50,7 @@ function setStyles(elem, style) {
 }
 
 
-class Table
+class ChainField
 {
     constructor(opt = {})
     {
