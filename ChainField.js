@@ -95,9 +95,9 @@ class ChainField
         setP('grid_width', 3);
         setP('gridStep', 60);
         setP('minGridStep', this.node_radius*2);
-        setp('maxGridStep', Infinity);
+        setP('maxGridStep', Infinity);
 
-        setp('maxWidth', Infinity);
+        setP('maxWidth', Infinity);
         setP('minWidth', 0);
         setP('maxHeight', Infinity);
         setP('minHeight', 0);
