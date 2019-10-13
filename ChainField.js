@@ -56,16 +56,16 @@ class ChainField
         setProp('show_score', true);
     }
 
-    static drawSegmentAnimation = drawSegmentAnimation;
-    static drawSegmentLinearAnimation = drawSegmentLinearAnimation;
-    static drawSegmentAlexAnimation = drawSegmentAlexAnimation;
-    static destroySegmentAnimation = destroySegmentAnimation;
-    static destroySegmentLinearAnimation = destroySegmentLinearAnimation;
-    static destroySegmentAlexAnimation = destroySegmentAlexAnimation;
-    static pulseNodeAnimation = pulseNodeAnimation;
+    // static drawSegmentAnimation = drawSegmentAnimation;
+    // static drawSegmentLinearAnimation = drawSegmentLinearAnimation;
+    // static drawSegmentAlexAnimation = drawSegmentAlexAnimation;
+    // static destroySegmentAnimation = destroySegmentAnimation;
+    // static destroySegmentLinearAnimation = destroySegmentLinearAnimation;
+    // static destroySegmentAlexAnimation = destroySegmentAlexAnimation;
+    // static pulseNodeAnimation = pulseNodeAnimation;
 
-    static cfKnightGame = cfKnightGame;
-    static cfLengthenGame = cfLengthenGame;
+    // static cfKnightGame = cfKnightGame;
+    // static cfLengthenGame = cfLengthenGame;
 
     make_busy() {
         this.busy = true;
@@ -369,7 +369,7 @@ class ChainField
 
     generate_table(x, y, 
         start_point = [0, 0], end_point = [x - 1, y - 1],
-        cf = ChainField.cfKnightGame)
+        cf = cfKnightGame)
     {
         this.points = [this.start_point];
         this.start_point = [Math.min(start_point[0], x - 1), 
@@ -492,7 +492,7 @@ class ChainField
         this.onchange();
     }
 
-    add_segment(x, y, animation = ChainField.drawSegmentAnimation) {
+    add_segment(x, y, animation = drawSegmentAnimation) {
         let last_x = this.points[this.lines_cnt][0];
         let last_y = this.points[this.lines_cnt][1];
         animation(this, 
@@ -504,7 +504,7 @@ class ChainField
         this.update_score();
     }
 
-    destroy_segments(x, y, animation = ChainField.destroySegmentAnimation)
+    destroy_segments(x, y, animation = destroySegmentAnimation)
     {
         for (let n = 0; n < this.lines_cnt; ++n) {
             if (this.points[n][0] == x && this.points[n][1] == y) {
