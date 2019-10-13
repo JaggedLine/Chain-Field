@@ -47,7 +47,7 @@ class ChainField
     constructor(opt = {})
     {
         let table = this;
-        function setAttr(property, value) {
+        function setProp(property, value) {
             if (opt[property] === undefined) {
                 table[property] = value;
             }
@@ -61,43 +61,43 @@ class ChainField
         this.points = new Array();
         this.games_cnt = 0;
 
-        setAttr('id', 'main');
-        setAttr('onchange', function(table) {});
+        setProp('id', 'main');
+        setProp('onchange', function(table) {});
 
-        setAttr('segment_height', 15);
-        setAttr('segment_color', 'green');
-        setAttr('delete_segment_color', this.segment_color);
+        setProp('segment_height', 15);
+        setProp('segment_color', 'green');
+        setProp('delete_segment_color', this.segment_color);
 
-        setAttr('node_radius', 15);
-        setAttr('clickable_node_radius', this.node_radius);
-        setAttr('node_border_radius', 0);
-        setAttr('node_color', 'green');
-        setAttr('node_border_color', this.node_color);
-        setAttr('hover_node_color', 'grey');
-        setAttr('used_node_color', this.node_color);
-        setAttr('used_node_border_color', this.used_node_color);
-        setAttr('start_node_color', 'red');
-        setAttr('end_node_color', 'black');
-        setAttr('delete_node_color', this.node_color);
-        setAttr('first_delete_node_color', this.delete_node_color);
-        setAttr('covered_node', 0);
+        setProp('node_radius', 15);
+        setProp('clickable_node_radius', this.node_radius);
+        setProp('node_border_radius', 0);
+        setProp('node_color', 'green');
+        setProp('node_border_color', this.node_color);
+        setProp('hover_node_color', 'grey');
+        setProp('used_node_color', this.node_color);
+        setProp('used_node_border_color', this.used_node_color);
+        setProp('start_node_color', 'red');
+        setProp('end_node_color', 'black');
+        setProp('delete_node_color', this.node_color);
+        setProp('first_delete_node_color', this.delete_node_color);
+        setProp('covered_node', 0);
 
-        setAttr('show_grid', false);
-        setAttr('grid_color', 'black');
-        setAttr('grid_width', 3);
-        setAttr('gridStep', 60);
-        setAttr('minGridStep', this.node_radius * 2);
-        setAttr('maxGridStep', Infinity);
+        setProp('show_grid', false);
+        setProp('grid_color', 'black');
+        setProp('grid_width', 3);
+        setProp('gridStep', 60);
+        setProp('minGridStep', this.node_radius * 2);
+        setProp('maxGridStep', Infinity);
 
-        setAttr('maxWidth', Infinity);
-        setAttr('minWidth', 0);
-        setAttr('maxHeight', Infinity);
-        setAttr('minHeight', 0);
+        setProp('maxWidth', Infinity);
+        setProp('minWidth', 0);
+        setProp('maxHeight', Infinity);
+        setProp('minHeight', 0);
 
-        setAttr('background_color', 'transparent');
-        setAttr('background_border', 0);
+        setProp('background_color', 'transparent');
+        setProp('background_border', 0);
 
-        setAttr('show_score', true);
+        setProp('show_score', true);
     }
 
     static drawSegmentAnimation(table, x1, y1, x2, y2)
