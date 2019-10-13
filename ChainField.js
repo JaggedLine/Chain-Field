@@ -1,12 +1,13 @@
-let xxx;
-
-// true if intersects
 function segments_intersect(x1, y1, x2, y2, x3, y3, x4, y4) 
 {
-    let a = vector_mul(x2 - x1, y2 - y1, x3 - x1, y3 - y1) * 
-        vector_mul(x2 - x1, y2 - y1, x4 - x1, y4 - y1);
-    let b = vector_mul(x4 - x3, y4 - y3, x1 - x3, y1 - y3) * 
-        vector_mul(x4 - x3, y4 - y3, x2 - x3, y2 - y3);
+    function cross(x1, y1, x2, y2) {
+        return x1 * y2 - x2 * y1;
+    }
+
+    let a = cross(x2 - x1, y2 - y1, x3 - x1, y3 - y1) * 
+        cross(x2 - x1, y2 - y1, x4 - x1, y4 - y1);
+    let b = cross(x4 - x3, y4 - y3, x1 - x3, y1 - y3) * 
+        cross(x4 - x3, y4 - y3, x2 - x3, y2 - y3);
     if (a <= 0 && b <= 0) {
         if (a == 0 && b == 0) {
             // оставим на потом)
@@ -17,22 +18,19 @@ function segments_intersect(x1, y1, x2, y2, x3, y3, x4, y4)
     return false;
 }
 
-function vector_mul(x1, y1, x2, y2)
-{
-    return x1 * y2 - x2 * y1;
+function setStyles(elem, style) {
+    for (let prop in style) {
+        elem.style[prop] = style[prop]
+    }
 }
 
 function addElement(parent, tag, style, opt)
 {
-    elem = document.createElement(tag);
+    let elem = document.createElement(tag);
     for (let prop in opt) {
         elem.setAttribute(prop, opt[prop]);
     }
-    let styleText = '';
-    for (let prop in style) {
-        styleText += ' ' + prop + ': ' + style[prop] + ';'
-    }
-    elem.style.cssText = styleText;
+    setStyles(elem, style);
     parent.append(elem);
     return elem;
 }
@@ -43,22 +41,17 @@ function fromInterval(x, L, R) {
     return x;
 }
 
-function setStyles(elem, style) {
-    for (let prop in style) {
-        elem.style[prop] = style[prop]
-    }
-}
-
 
 class ChainField
 {
     constructor(opt = {})
     {
         let table = this;
-        function setP(property, value) {
+        function setAttr(property, value) {
             if (opt[property] === undefined) {
                 table[property] = value;
-            } else {
+            }
+            else {
                 table[property] = opt[property];
             }
         }
@@ -68,44 +61,43 @@ class ChainField
         this.points = new Array();
         this.games_cnt = 0;
 
-        setP('id', 'main');
-        setP('onwin', function(table) {});
-        setP('onchange', function(table) {});
+        setAttr('id', 'main');
+        setAttr('onchange', function(table) {});
 
-        setP('segment_height', 15);
-        setP('segment_color', 'green');
-        setP('delete_segment_color', this.segment_color);
+        setAttr('segment_height', 15);
+        setAttr('segment_color', 'green');
+        setAttr('delete_segment_color', this.segment_color);
 
-        setP('node_radius', 15);
-        setP('clickable_node_radius', this.node_radius);
-        setP('node_border_radius', 0);
-        setP('node_color', 'green');
-        setP('node_border_color', this.node_color);
-        setP('hover_node_color', 'grey');
-        setP('used_node_color', this.node_color);
-        setP('used_node_border_color', this.used_node_color);
-        setP('start_node_color', 'red');
-        setP('end_node_color', 'black');
-        setP('delete_node_color', this.node_color);
-        setP('first_delete_node_color', this.delete_node_color);
-        setP('covered_node', 0);
+        setAttr('node_radius', 15);
+        setAttr('clickable_node_radius', this.node_radius);
+        setAttr('node_border_radius', 0);
+        setAttr('node_color', 'green');
+        setAttr('node_border_color', this.node_color);
+        setAttr('hover_node_color', 'grey');
+        setAttr('used_node_color', this.node_color);
+        setAttr('used_node_border_color', this.used_node_color);
+        setAttr('start_node_color', 'red');
+        setAttr('end_node_color', 'black');
+        setAttr('delete_node_color', this.node_color);
+        setAttr('first_delete_node_color', this.delete_node_color);
+        setAttr('covered_node', 0);
 
-        setP('show_grid', false);
-        setP('grid_color', 'black');
-        setP('grid_width', 3);
-        setP('gridStep', 60);
-        setP('minGridStep', this.node_radius*2);
-        setP('maxGridStep', Infinity);
+        setAttr('show_grid', false);
+        setAttr('grid_color', 'black');
+        setAttr('grid_width', 3);
+        setAttr('gridStep', 60);
+        setAttr('minGridStep', this.node_radius * 2);
+        setAttr('maxGridStep', Infinity);
 
-        setP('maxWidth', Infinity);
-        setP('minWidth', 0);
-        setP('maxHeight', Infinity);
-        setP('minHeight', 0);
+        setAttr('maxWidth', Infinity);
+        setAttr('minWidth', 0);
+        setAttr('maxHeight', Infinity);
+        setAttr('minHeight', 0);
 
-        setP('background_color', 'transparent');
-        setP('background_border', 0);
+        setAttr('background_color', 'transparent');
+        setAttr('background_border', 0);
 
-        setP('show_score', true);
+        setAttr('show_score', true);
     }
 
     static drawSegmentAnimation(table, x1, y1, x2, y2)
@@ -127,32 +119,35 @@ class ChainField
                 left: `${xc - len / 2 + 
                     table.node_radius + 
                     table.background_border}px`,
-                'border-radius': `${table.segment_height / 2}px`
+                'border-radius': `${table.segment_height / 2}px`,
             },
             {
                 id: `segment_${table.id}_${table.lines_cnt}`,
-                class: `segment`
-            });
+                class: `segment`,
+            }
+        );
     }
 
-    static drawSegmnetLinearAnimation(table, x1, y1, x2, y2)
+    static drawSegmentLinearAnimation(table, x1, y1, x2, y2)
     {
-        table.busy = true;
+        table.make_busy();
         let ang = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
         let segment = addElement(segments, 'div',
             {
                 background: table.segment_color,
-                transform: 'rotate(' + ang + 'deg)',
+                transform: `rotate(${ang}deg)`,
                 height: `${table.segment_height}px`,
-                'border-radius': `${table.segment_height / 2}px`
-            }, {
-            id: 'segment_' + table.id + '_' + table.lines_cnt,
-            class: 'segment'
-        });
+                'border-radius': `${table.segment_height / 2}px`,
+            },
+            {
+                id: `segment_${table.id}_${table.lines_cnt}`,
+                class: `segment`,
+            }
+        );
 
         function timer(t) {
             if (t >= 1.05) {
-                table.busy = false;
+                table.not_busy();
                 return;
             }
             setTimeout(() => timer(t + 0.1), 20);
@@ -163,8 +158,10 @@ class ChainField
 
             segment.style.width = `${len}px`;
             segment.style.top = `${yc + table.node_radius - 
-                table.segment_height / 2  + table.background_border}px`;
-            segment.style.left = `${xc - len / 2 + table.node_radius + 
+                table.segment_height / 2 + 
+                table.background_border}px`;
+            segment.style.left = `${xc - len / 2 + 
+                table.node_radius + 
                 table.background_border}px`;
         }
         timer(0);
@@ -172,21 +169,23 @@ class ChainField
 
     static drawSegmentAlexAnimation(table, x1, y1, x2, y2)
     {
-        table.busy = true;
+        table.make_busy();
         let ang = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
         let segment = addElement(segments, 'div',
             {
                 background: table.segment_color,
-                transform: 'rotate(' + ang + 'deg)',
-                height: table.segment_height
-            }, {
-            id: 'segment_' + table.id + '_' + table.lines_cnt,
-            class: 'segment'
-        });
+                transform: `rotate(${ang}deg)`,
+                height: `${table.segment_height}px`,
+            },
+            {
+                id: `segment_${table.id}_${table.lines_cnt}`,
+                class: `segment`,
+            }
+        );
 
         function timer(t) {
             if (t >= 1.05) {
-                table.busy = false;
+                table.not_busy();
                 return;
             }
             setTimeout(() => timer(t + 0.05), 10);
@@ -197,11 +196,14 @@ class ChainField
             let len2 = (Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2) +
                 table.segment_height) * t;
 
-            segment.style.width = len2 + 'px';
+            segment.style.width = `${len2}px`;
             segment.style.top = `${yc + table.node_radius - 
-                table.segment_height / 2 + table.background_border}px`;
-            segment.style.left = `${xc - len1 / 2 + table.node_radius +
+                table.segment_height / 2 + 
                 table.background_border}px`;
+            segment.style.left = `${xc - len1 / 2 + 
+                table.node_radius +
+                table.background_border}px`;
+            // console.log(segment.style.top);
         }
         timer(0);
     }
@@ -219,91 +221,92 @@ class ChainField
 
     static destroySegmentLinearAnimation(table, N, _past = 0)
     {
-                table.busy = true;
-                let segment = table.segment((table.lines_cnt - 1));
-                let x2 = table.points[table.lines_cnt][0] * table.gridStep; 
-                let y2 = table.points[table.lines_cnt][1] * table.gridStep;
-                let x1 = table.points[table.lines_cnt - 1][0] * table.gridStep; 
-                let y1 = table.points[table.lines_cnt - 1][1] * table.gridStep;
+        table.make_busy();
+        let segment = table.segment((table.lines_cnt - 1));
+        let x2 = table.points[table.lines_cnt][0] * table.gridStep; 
+        let y2 = table.points[table.lines_cnt][1] * table.gridStep;
+        let x1 = table.points[table.lines_cnt - 1][0] * table.gridStep; 
+        let y1 = table.points[table.lines_cnt - 1][1] * table.gridStep;
 
-                function timer(t) {
-                    if (t == 1) {
-                        table.points.pop();
-                        table.update_colors();
-                    } 
-                    if (t <= 0) {
-                        segments.removeChild(table.segment(table.lines_cnt));
-                        table.update_score();
-                        table.update_colors();
-                        table.onchange();
-                        if (N > 1) {
-                            ChainField.destroySegmentLinearAnimation(
-                                table, N - 1, _past + 1);
-                        } else {
-                            table.busy = false;
-                        }
-                        return;
-                    }
-                    setTimeout(function() {
-                        timer(t - 0.1 * (1 + Math.min(N - t, _past + t)));
-                    }, 20);
-                    let xc = x1 * (1 - t) + ((x1 + x2) / 2) * t; 
-                    let yc = y1 * (1 - t) + ((y1 + y2) / 2) * t;
-                    let len = (Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2) + 
-                        table.segment_height) * t;
-
-                    segment.style.width = `${len}px`;
-                    segment.style.top = `${yc + table.node_radius - 
-                        table.segment_height / 2 + table.background_border}px`;
-                    segment.style.left = `${xc - len / 2 + table.node_radius + 
-                        table.background_border}px`;
+        function timer(t) {
+            if (t == 1) {
+                table.points.pop();
+                table.update_colors();
+            }
+            if (t <= 0) {
+                segments.removeChild(table.segment(table.lines_cnt));
+                table.update_score();
+                table.update_colors();
+                table.onchange();
+                if (N > 1) {
+                    ChainField.destroySegmentLinearAnimation(
+                        table, N - 1, _past + 1);
                 }
-                timer(1);
+                else {
+                    table.not_busy();
+                }
+                return;
+            }
+            setTimeout(function() {
+                timer(t - 0.1 * (1 + Math.min(N - t, _past + t)));
+            }, 20);
+            let xc = x1 * (1 - t) + ((x1 + x2) / 2) * t; 
+            let yc = y1 * (1 - t) + ((y1 + y2) / 2) * t;
+            let len = (Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2) + 
+                table.segment_height) * t;
+
+            segment.style.width = `${len}px`;
+            segment.style.top = `${yc + table.node_radius - 
+                table.segment_height / 2 + 
+                table.background_border}px`;
+            segment.style.left = `${xc - len / 2 + 
+                table.node_radius + 
+                table.background_border}px`;
+        }
+        timer(1);
     }
 
-    static destroySegmentLeshaAnimation(table, N)
+    static destroySegmentAlexAnimation(table, N)
     {
-                table.busy = true;
-                let segment = table.segment((table.lines_cnt - 1));
-                let x2 = table.points[table.lines_cnt()][0] * table.gridStep; 
-                let y2 = table.points[table.lines_cnt()][1] * table.gridStep;
-                let x1 = table.points[table.lines_cnt() - 1][0] * table.gridStep; 
-                let y1 = table.points[table.lines_cnt() - 1][1] * table.gridStep;
+        table.make_busy();
+        let segment = table.segment((table.lines_cnt - 1));
+        let x2 = table.points[table.lines_cnt][0] * table.gridStep; 
+        let y2 = table.points[table.lines_cnt][1] * table.gridStep;
+        let x1 = table.points[table.lines_cnt - 1][0] * table.gridStep; 
+        let y1 = table.points[table.lines_cnt - 1][1] * table.gridStep;
 
-                function timer(t) {
-                    if (t == 1) {
-                        table.points.pop();
-                        table.update_colors();
-                    } 
-
-                    if (t <= 0) {
-                        segments.removeChild(table.segment(table.lines_cnt));
-                        table.update_score();
-                        table.update_colors();
-                        table.onchange();
-                        if (N > 1) {
-                            ChainField.destroySegmentLeshaAnimation(table, N - 1, _past + 1);
-                        } else {
-                            table.busy = false;
-                        }
-                        return;
-                    }
-
-                    setTimeout(function() {
-                        timer(t - 0.1 * (1 + Math.min(N - t, _past + t)));
-                    }, 20);
-
-                    let xc = x1 * (1 - t) + ((x1 + x2) / 2) * t; 
-                    let yc = y1 * (1 - t) + ((y1 + y2) / 2) * t;
-                    let len = (Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2) + 
-                        table.segment_height) * t;
-
-                    segment.style.width = `${len}px`;
-                    segment.style.top = `${yc + table.node_radius - 
-                        table.segment_height / 2 + table.background_border}px`;
+        function timer(t) {
+            if (t == 1) {
+                table.points.pop();
+                table.update_colors();
+            }
+            if (t <= 0) {
+                segments.removeChild(table.segment(table.lines_cnt));
+                table.update_score();
+                table.update_colors();
+                table.onchange();
+                if (N > 1) {
+                    ChainField.destroySegmentAlexAnimation(table, N - 1);
                 }
+                else {
+                    table.not_busy();
+                }
+                return;
+            }
+            setTimeout(function() {
+                timer(t - 0.1 * (1 + Math.min(N - t, N - t)));
+            }, 20);
+            let xc = x1 * (1 - t) + ((x1 + x2) / 2) * t; 
+            let yc = y1 * (1 - t) + ((y1 + y2) / 2) * t;
+            let len = (Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2) + 
+                table.segment_height) * t;
 
-                timer(1);
+            segment.style.width = `${len}px`;
+            segment.style.top = `${yc + table.node_radius - 
+                table.segment_height / 2 + 
+                table.background_border}px`;
+        }
+        timer(1);
     }
 
     static pulseNodeAnimation(color, time, finalRadius)
@@ -314,15 +317,12 @@ class ChainField
                     node.style.boxShadow = 'none';
                     return;
                 }
-
                 setTimeout(function() {
                     timer(t - 20 / time)
-                }, 20)
-
+                }, 20);
                 node.style.boxShadow = `0 0 0 ${finalRadius * (1 - t**1.5)}px` +
                     ` rgba(${color[0]}, ${color[1]}, ${color[2]}, ${t})`;
             }
-
             timer(1)
         }
     }
@@ -336,19 +336,19 @@ class ChainField
     }
 
     segment(n) {
-        return document.getElementById('segment_' + this.id + '_' + n);
+        return document.getElementById(`segment_${this.id}_${n}`);
     }
 
     node(x, y) {
-        return document.getElementById('node_' + this.id + '_' + x + '_' + y);
+        return document.getElementById(`node_${this.id}_${x}_${y}`);
     }
 
     clicknode(x, y) {
-        return document.getElementById('clicknode_' + this.id + '_' + x + '_' + y);
+        return document.getElementById(`clicknode_${this.id}_${x}_${y}`);
     }
 
     gridline(dir, x) {
-        return document.getElementById('gridline_' + this.id + '_' + dir + x);
+        return document.getElementById(`gridline_${this.id}_${dir}${x}`);
     }
 
     get lines_cnt() {
@@ -356,23 +356,20 @@ class ChainField
     }
 
     get win() {
-        if (this.end_point && 
-            this.end_point[0] == this.last_point[0] && 
-            this.end_point[1] == this.last_point[1]) 
-        {
-            return true;
-        } 
-        return false;
+        return this.end_point[0] == this.last_point[0] &&
+            this.end_point[1] == this.last_point[1];
     }
 
     get width() {
         return this.sz * (this.sizeX - 1) + 
-            2 * this.node_radius + 2 * this.background_border;
+            2 * this.node_radius + 
+            2 * this.background_border;
     }
 
     get height() {
         return this.sz * (this.sizeY - 1) + 
-            2 * this.node_radius + 2 * this.background_border; 
+            2 * this.node_radius + 
+            2 * this.background_border; 
     }
 
     get last_point() {
@@ -404,17 +401,15 @@ class ChainField
 
         if (this.covered_node) {
             let n = this.find_node(this.covered_node[0], this.covered_node[1]);
-
             if (n != this.lines_cnt) {
                 let x = this.covered_node[0], y = this.covered_node[1];
-
                 if (n == -1) {
                     this.node(y, x).style.background = this.hover_node_color;
-                } else {
+                }
+                else {
                     n++;
                     this.node(y, x).style.background = 
                         this.first_delete_node_color;
-
                     for (; n < this.points.length; n++) {
                         this.node(this.points[n][1], this.points[n][0]).
                             style.background = this.delete_node_color;
@@ -426,23 +421,25 @@ class ChainField
         }
         if (this.start_point) {
             this.node(this.start_point[1], this.start_point[0]).
-                style.background = this.start_node_color
-            };
+                style.background = this.start_node_color;
+        }
         if (this.end_point) {
             this.node(this.end_point[1], this.end_point[0]).
-                style.background = this.end_node_color
-            };
+                style.background = this.end_node_color;
+        }
     }
 
-    update_positions () {
+    update_positions()
+    {
         for (let i = 0; i < this.sizeY; ++i) {
             for (let j = 0; j < this.sizeX; ++j) {
                 let y_pos = i * this.gridStep, x_pos = j * this.gridStep;
                 setStyles(this.node(i, j),
                     {
                         top: `${y_pos + this.background_border}px`,
-                        left: `${x_pos + this.background_border}px`
-                    });
+                        left: `${x_pos + this.background_border}px`,
+                    }
+                );
             }
         }
         for (let i = 0; i < this.sizeY; ++i) {
@@ -453,8 +450,9 @@ class ChainField
                         top: `${y_pos - this.clickable_node_radius + 
                             this.node_radius + this.background_border}px`,
                         left: `${x_pos - this.clickable_node_radius + 
-                            this.node_radius + this.background_border}px`
-                    });
+                            this.node_radius + this.background_border}px`,
+                    }
+                );
             }
         }
         for (let n = 0; n < this.lines_cnt; ++n) {
@@ -471,55 +469,64 @@ class ChainField
                     transform: `rotate(${ang}deg)`,
                     width: `${len}px`,
                     height: `${this.segment_height}px`,
-                    top: `${yc + this.node_radius - this.segment_height / 2 + 
+                    top: `${yc + this.node_radius - 
+                        this.segment_height / 2 + 
                         this.background_border}px`,
-                    left: `${xc - len / 2 + this.node_radius + 
+                    left: `${xc - len / 2 + 
+                        this.node_radius + 
                         this.background_border}px`,
-                });
+                }
+            );
         }
         if (this.show_grid) {
             for (let i = 0; i < this.sizeY; ++i) {
                 setStyles(this.gridline('y', i),
-                {
-                    top: `${i * this.gridStep + this.node_radius - 
-                        this.grid_width/2 + this.background_border}px`,
-                    left: `${this.node_radius - this.grid_width/2 + 
-                        this.background_border}px`,
-                    width: `${(this.sizeX - 1) * this.gridStep + 
-                        this.grid_width}px`,
-                    height: `${this.grid_width}px`
-                })  
+                    {
+                        top: `${i * this.gridStep + this.node_radius - 
+                            this.grid_width / 2 + this.background_border}px`,
+                        left: `${this.node_radius - this.grid_width / 2 + 
+                            this.background_border}px`,
+                        width: `${(this.sizeX - 1) * this.gridStep + 
+                            this.grid_width}px`,
+                        height: `${this.grid_width}px`,
+                    }
+                );
             }
             for (let j = 0; j < this.sizeX; ++j) {
                 setStyles(this.gridline('x', j), 
-                {
-                    left: `${j * this.gridStep + this.node_radius - 
-                        this.grid_width/2 + this.background_border}px`,
-                    top: `${this.node_radius - this.grid_width/2 + 
-                        this.background_border}px`,
-                    height: `${(this.sizeY - 1) * this.gridStep + 
-                        this.grid_width}px`,
-                    width: `${this.grid_width}px`
-                })  
+                    {
+                        left: `${j * this.gridStep + this.node_radius - 
+                            this.grid_width / 2 + this.background_border}px`,
+                        top: `${this.node_radius - this.grid_width / 2 + 
+                            this.background_border}px`,
+                        height: `${(this.sizeY - 1) * this.gridStep + 
+                            this.grid_width}px`,
+                        width: `${this.grid_width}px`,
+                    }
+                );  
             }
         }
     }
 
-    update_background() {
+    update_background()
+    {
         field.style.width = `${this.gridStep * (this.sizeX - 1) + 
             this.node_radius * 2 + this.background_border * 2}px`;
         field.style.height = `${this.gridStep * (this.sizeY - 1) + 
             this.node_radius * 2 + this.background_border * 2}px`;
         field.style.background = this.background_color;
         field.style.border = `${this.background_border} solid ` + 
-            `${this.background_color}`
+            `${this.background_color}`;
     }
 
-    resize(xLength, yLength) {
+    resize(xLength, yLength)
+    {
         xLength = fromInterval(xLength, this.minWidth, this.maxWidth);
         yLength = fromInterval(yLength, this.minHeight, this.maxHeight);
-        let xGridStep = (xLength - this.node_radius * 2) / (this.sizeX - 1);
-        let yGridStep = (yLength - this.node_radius * 2) / (this.sizeY - 1);
+        let xGridStep = (xLength - 2 * this.node_radius - 
+            2 * this.background_border) / (this.sizeX - 1);
+        let yGridStep = (yLength - 2 * this.node_radius - 
+            2 * this.background_border) / (this.sizeY - 1);
         this.gridStep = Math.min(
             fromInterval(xGridStep, this.minGridStep, this.maxGridStep),
             fromInterval(yGridStep, this.minGridStep, this.maxGridStep));
@@ -527,19 +534,21 @@ class ChainField
         this.update_background();
     }
 
-    resize_as_parent() {
-        let parent = field.parentNode;
+    tie_to_parent()
+    {
         let table = this;
         document.body.onresize = function() {
             let parWidth = field.parentNode.clientWidth;
+            console.log(parWidth);
             table.resize(parWidth, Infinity);   
         }
         document.body.onresize();
     }
 
-    update_score() {
+    update_score()
+    {
         if (this.show_score) {
-            score.innerHTML = this.lines_cnt;
+            score.innerText = this.lines_cnt;
         }
     }
 
@@ -558,7 +567,7 @@ class ChainField
     {
         let for_delete = [];
         for (let child of segments.children) {
-            if (child.getAttribute('id').startsWith('segment_' + this.id + '_')) {
+            if (child.getAttribute('id').startsWith(`segment_${this.id}_`)) {
                 for_delete.push(child)
             }
         }
@@ -567,6 +576,7 @@ class ChainField
         }
         if (!no_update) {
             this.points = [this.start_point];
+            this.onchange();
             this.update_score();
             this.update_colors();
         }
@@ -603,8 +613,8 @@ class ChainField
     {
         this.clear_segments();
         this.points = [this.start_point];
-        this.update_score();
         this.onchange();
+        this.update_score();
         this.update_colors();
     }
 
@@ -614,28 +624,29 @@ class ChainField
         this.clear_nodes();
         this.clear_grid();
         this.points = [this.start_point];
-        this.update_score();
         this.onchange();
+        this.update_score();
     }
 
     static cfKnightGame(x, y, table)
     {
-        if (table.destroy_segments(x, y, ChainField.destroySegmentLinearAnimation)) {
+        if (table.destroy_segments(x, y, 
+            ChainField.destroySegmentLinearAnimation)) {
             return;
         }
         for (let n = 1; n <= table.lines_cnt; n++) {
             if (segments_intersect(x, y, ...table.last_point,
                 table.points[n - 1][0], table.points[n - 1][1],
                 table.points[n][0], table.points[n][1])) {
-                ChainField.pulseNodeAnimation([256, 0, 0], 300, 10)(table.node(y, x));
+                ChainField.pulseNodeAnimation([256, 0, 0], 3000, 100000)(table.node(y, x));
                 return;
             }
         }
         if ((x - table.last_point[0]) ** 2 + (y - table.last_point[1]) ** 2 != 5) {
-            ChainField.pulseNodeAnimation([256, 0, 0], 300, 10)(table.node(y, x));
+            ChainField.pulseNodeAnimation([256, 0, 0], 3000, 100000)(table.node(y, x));
             return;
         }
-        table.add_segment(x, y, ChainField.drawSegmnetLinearAnimation);
+        table.add_segment(x, y, ChainField.drawSegmentLinearAnimation);
     }
 
     generate_table(x, y, 
@@ -647,50 +658,53 @@ class ChainField
             Math.min(start_point[1], y - 1)];
         this.end_point = [Math.min(end_point[0], x - 1), 
             Math.min(end_point[1], y - 1)];
-        this.sizeX = x*1; this.sizeY = y*1;
-        this.busy = false;
-
+        this.sizeX = x; this.sizeY = y;
+        this.not_busy();
         this.delete_table();
         
         if (this.show_grid) {
             for (let i = 0; i < y; ++i) {
                 addElement(grid, 'div', 
-                {
-                    top: `${i * this.gridStep + this.node_radius - 
-                        this.grid_width/2 + this.background_border}px`,
-                    left: `${this.node_radius - this.grid_width/2 + 
-                        this.background_border}px`,
-                    background: this.grid_color,
-                    width: `${(this.sizeX - 1) * this.gridStep + 
-                        this.grid_width}px`,
-                    height: `${this.grid_width}px`
-                }, {
-                    id: `gridline_${this.id}_y${i}`,
-                    class: 'grid'
-                })  
+                    {
+                        top: `${i * this.gridStep + this.node_radius - 
+                            this.grid_width/2 + this.background_border}px`,
+                        left: `${this.node_radius - this.grid_width / 2 + 
+                            this.background_border}px`,
+                        background: this.grid_color,
+                        width: `${(this.sizeX - 1) * this.gridStep + 
+                            this.grid_width}px`,
+                        height: `${this.grid_width}px`,
+                    },
+                    {
+                        id: `gridline_${this.id}_y${i}`,
+                        class: `grid`,
+                    }
+                );  
             }
             for (let j = 0; j < x; ++j) {
                 addElement(grid, 'div', 
-                {
-                    left: `${j * this.gridStep + this.node_radius - 
-                        this.grid_width/2 + this.background_border}px`,
-                    top: `${this.node_radius - this.grid_width/2 + this.background_border}px`,
-                    background: this.grid_color,
-                    height: `${(this.sizeY - 1) * this.gridStep + 
-                        this.grid_width}px`,
-                    width: `${this.grid_width}px`
-                }, {
-                    id: `gridline_${this.id}_x${j}`,
-                    class: 'grid'
-                })  
+                    {
+                        left: `${j * this.gridStep + this.node_radius - 
+                            this.grid_width/2 + this.background_border}px`,
+                        top: `${this.node_radius - this.grid_width / 2 + 
+                            this.background_border}px`,
+                        background: this.grid_color,
+                        height: `${(this.sizeY - 1) * this.gridStep + 
+                            this.grid_width}px`,
+                        width: `${this.grid_width}px`,
+                    },
+                    {
+                        id: `gridline_${this.id}_x${j}`,
+                        class: `grid`,
+                    }
+                );  
             }
         }
-
 
         for (let i = 0; i < y; ++i) {
             for (let j = 0; j < x; ++j) {
                 let y_pos = i * this.gridStep, x_pos = j * this.gridStep;
-                let node = addElement(nodes, 'div',
+                addElement(nodes, 'div',
                     {
                         top: `${y_pos + this.background_border}px`,
                         left: `${x_pos + this.background_border}px`,
@@ -700,10 +714,12 @@ class ChainField
                         borderWidth: `${this.node_border_radius}px`,
                         border: `${this.node_border_radius}px solid ` + 
                             `${this.node_border_color}`
-                    }, {
+                    },
+                    {
                         id: `node_${this.id}_${i}_${j}`,
-                        class: 'node'
-                    });
+                        class: `node`,
+                    }
+                );
             }
         }
         for (let i = 0; i < y; ++i) {
@@ -718,10 +734,12 @@ class ChainField
                         background: 'transparent',
                         width: `${(this.clickable_node_radius) * 2}px`,
                         height: `${(this.clickable_node_radius) * 2}px`,
-                    }, {
+                    },
+                    {
                         id: `clicknode_${this.id}_${i}_${j}`,
-                        class: 'node'
-                    });
+                        class: `node`,
+                    }
+                );
                 let table = this;
                 node.onmouseover = function () {
                     if (!table.busy) {
@@ -730,7 +748,8 @@ class ChainField
                     }
                 };
                 node.onmouseout = function () {
-                    table.covered_node = 0; table.update_colors()
+                    table.covered_node = 0;
+                    table.update_colors();
                 };
             }
         }
@@ -765,16 +784,12 @@ class ChainField
         this.onchange();
         this.update_colors();
         this.update_score();
-        if (this.end_point[0] == x && this.end_point[1] == y) {
-            this.onwin(this);
-        }
-
     }
 
     destroy_segments(x, y, animation = this.destroySegmentAnimation)
     {
         for (let n = 0; n < this.lines_cnt; ++n) {
-            if (x == this.points[n][0] && y == this.points[n][1]) {
+            if (this.points[n][0] == x && this.points[n][1] == y) {
                 animation(this, this.lines_cnt - n);
                 return true;
             }
