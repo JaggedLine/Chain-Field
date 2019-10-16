@@ -19,6 +19,7 @@ class ChainField
 
         setProp('id', 'main');
         setProp('onchange', function(table) {});
+        setProp('onresize', function(table) {});
 
         setProp('segment_height', 15);
         setProp('segment_color', 'green');
@@ -55,17 +56,6 @@ class ChainField
 
         setProp('show_score', true);
     }
-
-    // static drawSegmentAnimation = drawSegmentAnimation;
-    // static drawSegmentLinearAnimation = drawSegmentLinearAnimation;
-    // static drawSegmentAlexAnimation = drawSegmentAlexAnimation;
-    // static destroySegmentAnimation = destroySegmentAnimation;
-    // static destroySegmentLinearAnimation = destroySegmentLinearAnimation;
-    // static destroySegmentAlexAnimation = destroySegmentAlexAnimation;
-    // static pulseNodeAnimation = pulseNodeAnimation;
-
-    // static cfKnightGame = cfKnightGame;
-    // static cfLengthenGame = cfLengthenGame;
 
     make_busy() {
         this.busy = true;
@@ -284,7 +274,8 @@ class ChainField
         let table = this;
         document.body.onresize = function() {
             let parWidth = field.parentNode.clientWidth;
-            table.resize(parWidth, Infinity);   
+            let parHeight = field.parentNode.clientHeight;
+            table.resize(parWidth, parHeight);   
         }
         document.body.onresize();
     }
@@ -487,6 +478,7 @@ class ChainField
             }
         }
 
+        this.tie_to_parent();
         this.update_score();
         this.update_colors();
         this.node(this.start_point[1], this.start_point[0]).style.background = 
