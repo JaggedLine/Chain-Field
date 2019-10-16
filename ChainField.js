@@ -187,6 +187,8 @@ class ChainField
                 let y_pos = i * this.gridStep, x_pos = j * this.gridStep;
                 setStyles(this.clicknode(i, j),
                     {
+                        width: `${(this.clickable_node_radius) * 2}px`,
+                        height: `${(this.clickable_node_radius) * 2}px`,
                         top: `${y_pos - this.clickable_node_radius + 
                             this.node_radius + this.background_border}px`,
                         left: `${x_pos - this.clickable_node_radius + 
@@ -270,6 +272,9 @@ class ChainField
         this.gridStep = Math.min(
             fromInterval(xGridStep, this.minGridStep, this.maxGridStep),
             fromInterval(yGridStep, this.minGridStep, this.maxGridStep));
+        this.clickable_node_radius = Math.min(
+            this.clickable_node_radius, this.gridStep / 2)
+
         this.update_positions();
         this.update_background();
     }
