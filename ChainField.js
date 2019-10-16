@@ -101,13 +101,13 @@ class ChainField
     }
 
     get width() {
-        return this.sz * (this.sizeX - 1) + 
+        return this.gridStep * (this.sizeX - 1) + 
             2 * this.node_radius + 
             2 * this.background_border;
     }
 
     get height() {
-        return this.sz * (this.sizeY - 1) + 
+        return this.gridStep * (this.sizeY - 1) + 
             2 * this.node_radius + 
             2 * this.background_border; 
     }
