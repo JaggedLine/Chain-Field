@@ -102,6 +102,18 @@ class ChainField
             2 * this.background_border; 
     }
 
+    get min_width() {
+        return this.minGridStep * (this.sizeX - 1) + 
+            2 * this.node_radius + 
+            2 * this.background_border;
+    }
+
+    get min_height() {
+        return this.minGridStep * (this.sizeY - 1) + 
+            2 * this.node_radius + 
+            2 * this.background_border; 
+    }
+
     get last_point() {
         return [
             this.points[this.lines_cnt][0],
@@ -275,7 +287,12 @@ class ChainField
         document.body.onresize = function() {
             let parWidth = field.parentNode.clientWidth;
             let parHeight = field.parentNode.clientHeight;
-            table.resize(parWidth, parHeight);   
+            if (parHeight < table.min_height) {
+                table.resize(parWidth, Infinity);
+            }
+            else {
+                table.resize(parWidth, parHeight); 
+            }
         }
         document.body.onresize();
     }
