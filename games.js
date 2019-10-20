@@ -12,6 +12,9 @@ function cfKnightGame(x, y, table)
         }
     }
     let last_point = table.last_point;
+    if (squared_distance(x, y, last_point[0], last_point[1]) == 0) {
+        return;
+    }
     if (squared_distance(x, y, last_point[0], last_point[1]) == 5) {
         table.add_segment(x, y, drawSegmentLinearAnimation);
         return;

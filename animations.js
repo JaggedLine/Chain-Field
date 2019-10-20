@@ -214,6 +214,7 @@ function pulseNodeAnimation(color, time, finalRadius)
         function timer(t) {
             if (t <= 0) {
                 node.style.boxShadow = 'none';
+                node.style.zIndex = '0';
                 return;
             }
             setTimeout(function() {
@@ -221,6 +222,7 @@ function pulseNodeAnimation(color, time, finalRadius)
             }, 20);
             node.style.boxShadow = `0 0 0 ${finalRadius * (1 - t**1.5)}px` +
                 ` rgba(${color[0]}, ${color[1]}, ${color[2]}, ${t})`;
+            node.style.zIndex = '228';
         }
         timer(1)
     }

@@ -19,6 +19,7 @@ class ChainField
 
         setProp('id', 'main');
         setProp('onchange', function(table) {});
+        setProp('onresize', function(table) {});
 
         setProp('segment_height', 15);
         setProp('segment_color', 'green');
@@ -56,17 +57,6 @@ class ChainField
         setProp('show_score', true);
     }
 
-    // static drawSegmentAnimation = drawSegmentAnimation;
-    // static drawSegmentLinearAnimation = drawSegmentLinearAnimation;
-    // static drawSegmentAlexAnimation = drawSegmentAlexAnimation;
-    // static destroySegmentAnimation = destroySegmentAnimation;
-    // static destroySegmentLinearAnimation = destroySegmentLinearAnimation;
-    // static destroySegmentAlexAnimation = destroySegmentAlexAnimation;
-    // static pulseNodeAnimation = pulseNodeAnimation;
-
-    // static cfKnightGame = cfKnightGame;
-    // static cfLengthenGame = cfLengthenGame;
-
     make_busy() {
         this.busy = true;
     }
@@ -101,13 +91,25 @@ class ChainField
     }
 
     get width() {
-        return this.sz * (this.sizeX - 1) + 
+        return this.gridStep * (this.sizeX - 1) + 
             2 * this.node_radius + 
             2 * this.background_border;
     }
 
     get height() {
-        return this.sz * (this.sizeY - 1) + 
+        return this.gridStep * (this.sizeY - 1) + 
+            2 * this.node_radius + 
+            2 * this.background_border; 
+    }
+
+    get min_width() {
+        return this.minGridStep * (this.sizeX - 1) + 
+            2 * this.node_radius + 
+            2 * this.background_border;
+    }
+
+    get min_height() {
+        return this.minGridStep * (this.sizeY - 1) + 
             2 * this.node_radius + 
             2 * this.background_border; 
     }
@@ -187,6 +189,8 @@ class ChainField
                 let y_pos = i * this.gridStep, x_pos = j * this.gridStep;
                 setStyles(this.clicknode(i, j),
                     {
+                        width: `${(this.clickable_node_radius) * 2}px`,
+                        height: `${(this.clickable_node_radius) * 2}px`,
                         top: `${y_pos - this.clickable_node_radius + 
                             this.node_radius + this.background_border}px`,
                         left: `${x_pos - this.clickable_node_radius + 
@@ -270,6 +274,9 @@ class ChainField
         this.gridStep = Math.min(
             fromInterval(xGridStep, this.minGridStep, this.maxGridStep),
             fromInterval(yGridStep, this.minGridStep, this.maxGridStep));
+        this.clickable_node_radius = Math.min(
+            this.clickable_node_radius, this.gridStep / 2)
+
         this.update_positions();
         this.update_background();
     }
@@ -279,7 +286,13 @@ class ChainField
         let table = this;
         document.body.onresize = function() {
             let parWidth = field.parentNode.clientWidth;
-            table.resize(parWidth, Infinity);   
+            let parHeight = field.parentNode.clientHeight;
+            if (parHeight < table.min_height) {
+                table.resize(parWidth, Infinity);
+            }
+            else {
+                table.resize(parWidth, parHeight); 
+            }
         }
         document.body.onresize();
     }
@@ -482,6 +495,7 @@ class ChainField
             }
         }
 
+        this.tie_to_parent();
         this.update_score();
         this.update_colors();
         this.node(this.start_point[1], this.start_point[0]).style.background = 
